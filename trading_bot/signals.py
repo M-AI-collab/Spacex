@@ -75,7 +75,9 @@ def build_labels(prices: pd.DataFrame) -> pd.Series:
     fwd_cash = prices[C.CASH_ASSET].shift(-h) / prices[C.CASH_ASSET] - 1
     excess = fwd.sub(fwd_cash, axis=0)
     label = (excess > 0).astype(float).where(excess.notna())
-    return label.stack().rename("label")
+    out = label.stack().rename("label")
+    out.index.names = ["date", "ticker"]
+    return out
 
 
 def ml_score(prices: pd.DataFrame, rebalance_dates: pd.DatetimeIndex) -> pd.DataFrame:

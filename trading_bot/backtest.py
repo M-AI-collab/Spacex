@@ -113,6 +113,7 @@ def metrics(curve: pd.DataFrame, prices: pd.DataFrame) -> dict:
 
 def yearly_returns(curve: pd.DataFrame) -> pd.Series:
     eq = curve["equity"]
-    first = pd.Series([1.0], index=[eq.index[0] - pd.Timedelta(days=1)])
-    year_end = pd.concat([first, eq]).groupby(lambda d: d.year).last()
-    return year_end.pct_change().dropna().rename(lambda y: str(y))
+    year_end = eq.groupby(eq.index.year).last()
+    prev = year_end.shift(1)
+    prev.iloc[0] = 1.0  # equity starts at 1.0
+    return (year_end / prev - 1).rename(lambda y: str(y))
