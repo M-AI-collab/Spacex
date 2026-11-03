@@ -63,3 +63,24 @@ python run_scalping.py   # downloads ~170 MB of Binance archives to data/ on fir
 
 Files: `data.py` (download and parsing), `strategies.py` (the four strategies), `engine.py`
 (trade simulator and metrics), `run_scalping.py` (runs everything and writes `results/`).
+
+## Follow-up: pro-style opening-range breakout ([`pro_orb.py`](pro_orb.py))
+
+Same BTC 1-minute data, rules fixed before testing, built up one improvement at a time.
+Full tables: [`results/PRO_ORB.md`](results/PRO_ORB.md) · Chart: [`results/pro_orb.png`](results/pro_orb.png)
+
+| Variant ($1,000 start, Jan 2020-Oct 2026) | 0% cost | 0.01% | **0.02% (pro)** | 0.05% (retail) | CAGR @ 0.02% | Max DD | Win rate |
+|---|---|---|---|---|---|---|---|
+| V0 Original ORB | $7,579 | $5,412 | **$3,864** | $1,406 | +21.9% | -25.1% | 42% |
+| V1 + 1% risk sizing | $15,575 | $10,088 | **$6,533** | $1,773 | +31.6% | -28.9% | 42% |
+| V2 + half off at 1R, breakeven stop | $7,940 | $5,142 | **$3,330** | $903 | +19.3% | -24.2% | 53% |
+| V3 + trend & volume filters | $2,154 | $1,930 | **$1,729** | $1,242 | +8.3% | -10.1% | 54% |
+
+Findings:
+
+1. **Costs are the biggest single factor.** The same strategy goes from +5.1%/yr at retail costs to +21.9%/yr at pro costs.
+2. **Risk-based sizing helped most** (+31.6%/yr, Sharpe 1.15): small positions on wide-range days, bigger ones on tight-range days.
+3. **A higher win rate made LESS money.** Taking half off at 1R raised the win rate from 42% to 53%, but cut the big winners that pay for everything, so returns fell. Win rate alone is a misleading target.
+4. **The filters bought stability, not profit.** V3 trades only 432 times, has a -10% max drawdown, and earned almost the same in 2020-23 (+8.7%/yr) as in 2024-26 (+8.2%/yr), but makes much less.
+5. **The edge is fading.** Since mid-2024, V0-V2 have been flat or falling even at pro costs, with 2025 and 2026 losing years.
+6. **Scale check:** at 0.02% costs, the best variant (V1) averaged ~31%/yr. On $100k that is about $31k/yr on average, with losing years recently. On $1,000 it is about $300/yr. Four variants were tested, so the best one is somewhat flattered by selection.
